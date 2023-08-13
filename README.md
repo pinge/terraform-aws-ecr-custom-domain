@@ -23,7 +23,11 @@ AWS ECR [does not support custom domain names](https://github.com/aws/containers
 
 ## How
 
-When running `docker pull`, the Docker Registry [returns 307 Temporary Redirects](https://httptoolkit.com/blog/docker-image-registry-facade/) to the actual image content. This module creates a "registry facade" on the custom domain by provisioning an API Gateway that returns a `307 Temporary Redirect`.
+When running `docker pull` the Docker Registry [returns 307 Temporary Redirects](https://httptoolkit.com/blog/docker-image-registry-facade/) to the actual image content.
+
+This module creates a "registry facade" on the custom domain by provisioning an API Gateway that returns a `307 Temporary Redirect` when executing `docker pull` or `docker push`.
+
+For `docker pull/push` to work, you will need to authenticate with `docker login ecr.example.com`
 
 ## Examples
 
