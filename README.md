@@ -6,7 +6,7 @@ Terraform module to provision a custom domain for AWS ECR.
 
 ```hcl
 module "aws_ecr_custom_domain" {
-  source      = "pinge/terraform-aws-ecr-custom-domain"
+  source      = "pinge/ecr-custom-domain/aws"
   domain_name = "ecr.example.com"
   zone_id = aws_route53_zone.some_zone.id
 
