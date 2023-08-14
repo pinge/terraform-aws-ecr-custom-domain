@@ -1,3 +1,9 @@
+variable "certificate_arn" {
+  type        = string
+  description = "The SSL certificate ARN to use for the custom domain"
+  default     = null
+}
+
 variable "domain_name" {
   type        = string
   description = "The custom domain for AWS ECR"

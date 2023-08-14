@@ -1,5 +1,5 @@
 output "certificate_arn" {
-  value = aws_acm_certificate.this.arn
+  value = var.certificate_arn == null ? aws_acm_certificate.this[0].arn : var.certificate_arn
 }
 
 output "records" {

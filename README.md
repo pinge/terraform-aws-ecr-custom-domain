@@ -8,10 +8,10 @@ Terraform module to provision a custom domain for AWS ECR.
 module "aws_ecr_custom_domain" {
   source      = "pinge/ecr-custom-domain/aws"
   domain_name = "ecr.example.com"
-  zone_id = aws_route53_zone.some_zone.id
+  zone_id     = aws_route53_zone.some_zone.id
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
   }
 }
@@ -19,7 +19,7 @@ module "aws_ecr_custom_domain" {
 
 ## Why
 
-AWS ECR [does not support custom domain names](https://github.com/aws/containers-roadmap/issues/299). This module provisions a custom domain for your container registry so you don't have to deal with a `987654321.dkr.ecr.eu-east-1.amazonaws.com` registry path.
+AWS ECR [does not support custom domain names](https://github.com/aws/containers-roadmap/issues/299). This module provisions a custom domain for your container registry so you don't have to deal with a `987654321.dkr.ecr.us-east-1.amazonaws.com` registry path.
 
 ## How
 

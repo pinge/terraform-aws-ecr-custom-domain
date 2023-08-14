@@ -14,6 +14,7 @@ locals {
 }
 
 resource "aws_acm_certificate" "this" {
+  count             = var.certificate_arn == null ? 1 : 0
   domain_name       = var.domain_name
   validation_method = "DNS"
   lifecycle {
@@ -22,13 +23,13 @@ resource "aws_acm_certificate" "this" {
 }
 
 resource "aws_route53_record" "certificate_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.this.domain_validation_options : dvo.domain_name => {
+  for_each = var.certificate_arn == null ? {
+    for dvo in aws_acm_certificate.this[0].domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
     }
-  }
+  } : {}
 
   allow_overwrite = true
   name            = each.value.name
@@ -39,27 +40,28 @@ resource "aws_route53_record" "certificate_validation" {
 }
 
 resource "aws_acm_certificate_validation" "this" {
-  certificate_arn         = aws_acm_certificate.this.arn
-  validation_record_fqdns = [for record in aws_route53_record.certificate_validation : record.fqdn]
+  count                   = var.certificate_arn == null ? 1 : 0
+  certificate_arn         = aws_acm_certificate.this[0].arn
+  validation_record_fqdns = [for record in aws_route53_record.certificate_validation[0] : record.fqdn]
 }
 
 resource "aws_apigatewayv2_api" "this" {
   name                         = "ECR Facade API - ${var.domain_name}"
   protocol_type                = "HTTP"
   disable_execute_api_endpoint = true
-  depends_on                   = [aws_acm_certificate_validation.this]
+  depends_on                   = [aws_acm_certificate_validation.this[0]]
 }
 
 resource "aws_apigatewayv2_domain_name" "this" {
   domain_name = var.domain_name
 
   domain_name_configuration {
-    certificate_arn = aws_acm_certificate.this.arn
+    certificate_arn = var.certificate_arn == null ? aws_acm_certificate.this[0].arn : var.certificate_arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
 
-  depends_on = [aws_acm_certificate_validation.this]
+  depends_on = [aws_acm_certificate_validation.this[0]]
 }
 
 resource "aws_apigatewayv2_stage" "this" {
